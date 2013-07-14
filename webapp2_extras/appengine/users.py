@@ -10,6 +10,7 @@
 """
 from google.appengine.api import users
 
+import logging
 
 def login_required(handler_method):
     """A decorator to require that a user be logged in to access a handler.
@@ -61,7 +62,11 @@ def admin_required(handler_method):
 
         user = users.get_current_user()
         if not user:
-            return self.redirect(users.create_login_url(self.request.url))
+            callbck_url = self.request.url
+            if self.app.config.get('host_url'):
+                callbck_url = '%s%s'%(self.app.config.get('host_url'), self.request.path_qs)
+            logging.info('Require Admin login, callback_url is %s'%(callbck_url,))
+            return self.redirect(users.create_login_url(callbck_url))
         elif not users.is_current_user_admin():
             self.abort(403)
         else:

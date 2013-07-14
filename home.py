@@ -15,6 +15,7 @@ from google.appengine.api import images
 import webapp2_extras.routes
 from webapp2_extras import jinja2
 from webapp2_extras import sessions
+from webapp2_extras.appengine.users import admin_required
 from oauth2client.appengine import OAuth2Decorator
 
 #sys.path.append(os.path.join(os.path.dirname(__file__), 'lib'))
@@ -131,13 +132,17 @@ class TagHandler(BaseHandler):
         self.render_response_post_list(post_list)
 
 class AdminHandler(BaseAdminHandler):
-    @decorator.oauth_required
+    @admin_required
     def get(self):
-        self.render_response('admin_base.html', {'uri_for': webapp2.uri_for})
+        home_url = webapp2.uri_for('home')
+        if self.app.config.get('host_url'):
+            home_url = '%s%s'%(self.app.config.get('host_url'), home_url)
+        logout_url = users.create_logout_url(home_url)
+        self.render_response('admin_base.html', {'uri_for': webapp2.uri_for, 'logout_url':logout_url})
 
 
 class AdminUserHandler(BaseAdminHandler):
-    @decorator.oauth_required
+    @admin_required
     def get(self):
         uid = self.request.get('uid')
         a = models.get_user_by_id(uid)
@@ -163,7 +168,7 @@ class AdminUserHandler(BaseAdminHandler):
         #self.response.write(render_template('admin_user.html',{'user_list':models.get_user_list()}))
 
 class AdminCategoryHandler(BaseAdminHandler):
-    @decorator.oauth_required
+    @admin_required
     def get(self):
         cid = self.request.get('cid')
         category = models.get_category_by_id(cid)
@@ -189,7 +194,7 @@ class AdminCategoryHandler(BaseAdminHandler):
         self.redirect(self.uri_for('admin-category'))
 
 class AdminPostListHandler(BaseAdminHandler):
-    @decorator.oauth_required
+    @admin_required
     def get(self):
         user = users.get_current_user()
         if user:
@@ -201,7 +206,7 @@ class AdminPostListHandler(BaseAdminHandler):
 
 
 class AdminPostHandler(BaseAdminHandler):
-    @decorator.oauth_required
+    @admin_required
     def get(self):
         post_id = self.request.get('id')
         if post_id != None:
@@ -232,18 +237,21 @@ class AdminPostHandler(BaseAdminHandler):
         self.render_response('admin_post.html',ctx)
 
 class AdminDeletePostHandler(BaseAdminHandler):
+    @admin_required
     def get(self):
         post_id = self.request.get('id')
         models.delete_post_by_id(post_id)
         self.redirect(self.uri_for('admin-post-list'))
 
 class AdminFileHandler(BaseAdminHandler):
+    @admin_required
     def get(self):
         ctx = {'file_list':models.get_uploaded_file_list(), 'uri_for':webapp2.uri_for}
         ctx['upload_url'] = create_file_upload_url(self.request)
         self.render_response('admin_file.html', ctx)
 
 class AdminFileDeleteHandler(BaseAdminHandler):
+    @admin_required
     def get(self, file_id):
         uploadedFile = models.get_file(file_id)
         if uploadedFile:
@@ -364,6 +372,8 @@ config['page_size'] = 10
 config['webapp2_extras.sessions'] = {
     'secret_key': 'jfdfaeti78fdFfinlifjser'
 }
+if not debug:
+    config['host_url'] = 'http://blog.viifly.com'
 
 app = webapp2.WSGIApplication(routes, debug=debug, config=config)
 app.error_handlers[404] = handle_404
