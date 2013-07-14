@@ -1,0 +1,9 @@
+{% macro disp_category(category, uri_for) %}
+<a href="{{ uri_for('post-by-category', name=category.name) }}">{{ category.label }}</a>
+{# <a href="/blog/category/{{ category.name }}">{{ category.label }}</a> #}
+{% endmacro %}
+
+{% macro disp_tag(tag, uri_for) %}
+<a href="{{ uri_for('post-by-tag', name=tag) }}">{{ tag }}</a>
+{# <a href="/blog/tag/{{ tag }}">{{ tag }}</a> #}
+{% endmacro %}

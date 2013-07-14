@@ -1,0 +1,48 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Post List - Admin - Blog{% endblock %}
+
+{% block page_content %}
+<div class="pure-g">
+  <div class="pure-u">
+    <table class="pure-table pure-table-bordered">
+        <thead>
+            <tr>
+                <td>#</td>
+                <td>Name</td>
+                <td>Label</td>
+                <td>Action</td>
+            </tr>
+        </thead>
+        <tbody>
+           {% for c in category_list %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ c.name }}</td>
+                <td>{{ c.label }}</td>
+                <td>
+                    <a href="{{ uri_for('admin-category') }}?cid={{ c.key().id() }}">Edit</a>
+                    <a href="{{ uri_for('admin-category') }}?action=delete&cid={{ c.key().id() }}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+</div>
+<div class="pure-g">
+  <div class="pure-u">
+    <form action="{{ uri_for('admin-category') }}?action=edit" method="POST" class="pure-form-stacked">
+        <fieldset>
+            <legend>New Category</legend>
+            <input type="hidden" id="inp_cid" name="cid" value="{% if category %}{{ category.key().id() }}{% endif %}"/>
+            <label for="inp_name">Name: </label>
+            <input type="text" id="inp_name" name="name" value="{{ category.name }}" placeholer="name" />
+            <label for="inp_label">Label: </label>
+            <input type="text" id="inp_label" name="label" value="{{ category.label }}" placeholer="label" />
+            <button type="submit" class="pure-button notice">Save</button>
+        </fieldset>
+    </form>
+  </div>
+</div>
+{% endblock %}

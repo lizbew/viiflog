@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% block head %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Index{% endblock %}</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.0/pure-min.css" />
+    <link rel="stylesheet" href="/static/css/marketing.css" />
+    {% endblock %}
+  </head>
+  <body>
+    <div class="content pure-g-r">
+        <div class="header pure-u-1">
+        <div class="pure-menu pure-menu-open pure-menu-fixed pure-menu-horizontal">
+            <a class="pure-menu-heading" href="{{ uri_for('home') }}">Vika's Blog</a>
+
+            <ul>
+                <li class="pure-menu-selected"><a href="{{ uri_for('home') }}">Home</a></li>
+                <li><a href="{{ uri_for('page', page='about') }}">About</a></li>
+            </ul>
+        </div>
+        </div>
+        <!-- div class="splash pure-u-1"></div -->
+        <div class="content pure-u-1">
+          {% block content %} welcome to my blog {% endblock %}
+        </div>
+
+        <div class="footer pure-u-1">
+          {% block footer %}
+          <div class="cy">&copy;2013 vika</div>
+          <div class="powerby"><img src="https://developers.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" /></div>
+          {% endblock %}
+        </div>
+    <div>
+    {% block js %} {% endblock %}
+  </body>
+</html>

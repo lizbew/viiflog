@@ -1,0 +1,10 @@
+                  <div class="blog">
+                      <h2 class="blog-title"><a href="{{ uri_for('post', post_id=post.get_id()) }}">{{ post.title }}</a></h2>
+                      <div class="blog-meta1">By <span>{{ post.author.nick_name }}</span>&nbsp;<span>{{ post.get_published_date_str() }}</span></div>
+                      <div>{% if page_mode == 'list' %}{{ post.get_html_abstract() | safe }}{% else %}{{ post.get_html_content() | safe }}{% endif %}</div>
+                      {% import "macros_post.html" as marcos_post %}
+                      <div class="blog-meta2">
+                        {{ 'In ' ~ marcos_post.disp_category(post.category, uri_for) }}
+                        {% if post.has_tags() %}Tags: {% for tag in post.tags %}{{ marcos_post.disp_tag(tag, uri_for ) }}{% endfor %}{% endif %}
+                      </div>
+                  </div>

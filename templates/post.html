@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Post List - Admin - Blog{% endblock %}
+
+{% block head %}
+   {{ super() }}
+   <link rel="stylesheet" href="/static/css/prettify.css" />
+{% endblock %}
+
+
+{% block content %}
+          <div class="pure-g content-ribbon">
+              <div class="pure-u-2-3 main">
+              {% if post_list %}
+              {% for post in post_list %}
+                  {% include "partial_post.html" %}
+              {% endfor %}
+              {% else %}
+                  <div class="blog">No Post Found</div>
+              {% endif %}
+              </div>
+              <div class="pure-u-1-3">
+                  <div class="sidebar">
+                  {% include "sb_category.html" %}
+                  </div>
+              </div>
+          </div>
+{% endblock %}
+
+{% block js %}
+<!-- script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script -->
+<script src="/static/js/run_prettify.js"></script>
+{% endblock %}

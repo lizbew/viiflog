@@ -1,0 +1,33 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Post List - Admin - Blog{% endblock %}
+
+{% block page_content %}
+    <table class="pure-table pure-table-bordered">
+        <thead>
+            <tr>
+                <td>#</td>
+                <td>Title</td>
+                <td>Updated Date</td>
+                <td>Category</td>
+                <td>Published</td>
+                <td> </td>
+            </tr>
+        </thead>
+        <tbody>
+           {% for post in post_list %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td><a href="{{ uri_for('post', post_id=post.get_id()) }}" target="_blank">{{ post.title }}</a></td>
+                <td>{{ post.get_updated_date_str() }}</td>
+                <td>{% if post.category %}{{ post.category.name}}{% endif %}</td>
+                <td>{{ post.published }}</td>
+                <td>
+                    <a href="{{ uri_for('admin-post') }}?id={{ post.get_id() }}">Edit</a>
+                    <a href="{{ uri_for('admin-post-delete') }}?id={{ post.get_id() }}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
