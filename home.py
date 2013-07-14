@@ -15,7 +15,7 @@ from google.appengine.api import images
 import webapp2_extras.routes
 from webapp2_extras import jinja2
 from webapp2_extras import sessions
-from webapp2_extras.appengine.users import admin_required
+#from webapp2_extras.appengine.users import admin_required
 from oauth2client.appengine import OAuth2Decorator
 
 #sys.path.append(os.path.join(os.path.dirname(__file__), 'lib'))
@@ -28,7 +28,15 @@ from oauth2client.appengine import OAuth2Decorator
 #    template = JINJA_ENVIRONMENT.get_template(template_name)
 #    return template.render(template_values)
 
+
+debug = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
+# debug = False
+if debug:
+    logging.info('Running in Debug mode!')
+
 PATH_PREFIX = '/blog'
+CHECK_HOST = not debug
+UPS_HEADER_NAME = 'X-Viifly'
 
 def uri_for_static(static_uri):
     if PATH_PREFIX and static_uri.startswith('/'):
@@ -63,9 +71,14 @@ class RedirectHandler(webapp2.RequestHandler):
 class BaseHandler(webapp2.RequestHandler):
 
     def dispatch(self):
+        head_fly = self.request.headers.get(UPS_HEADER_NAME)
+        if CHECK_HOST and self.app.config.get('host_url') and not head_fly:
+            self.redirect('%s%s'%(self.app.config.get('host_url'), self.request.path_qs))
+            return
         self.session_store = sessions.get_store(request=self.request)
         try:
             webapp2.RequestHandler.dispatch(self)
+            # super(BaseHandler, self).dispatch()
         finally:
             self.session_store.save_sessions(self.response)
 
@@ -132,7 +145,7 @@ class TagHandler(BaseHandler):
         self.render_response_post_list(post_list)
 
 class AdminHandler(BaseAdminHandler):
-    @admin_required
+    #@admin_required
     def get(self):
         home_url = webapp2.uri_for('home')
         if self.app.config.get('host_url'):
@@ -142,7 +155,7 @@ class AdminHandler(BaseAdminHandler):
 
 
 class AdminUserHandler(BaseAdminHandler):
-    @admin_required
+    #@admin_required
     def get(self):
         uid = self.request.get('uid')
         a = models.get_user_by_id(uid)
@@ -168,7 +181,7 @@ class AdminUserHandler(BaseAdminHandler):
         #self.response.write(render_template('admin_user.html',{'user_list':models.get_user_list()}))
 
 class AdminCategoryHandler(BaseAdminHandler):
-    @admin_required
+    #@admin_required
     def get(self):
         cid = self.request.get('cid')
         category = models.get_category_by_id(cid)
@@ -194,19 +207,21 @@ class AdminCategoryHandler(BaseAdminHandler):
         self.redirect(self.uri_for('admin-category'))
 
 class AdminPostListHandler(BaseAdminHandler):
-    @admin_required
+    #@admin_required
     def get(self):
-        user = users.get_current_user()
+        # user = users.get_current_user()
+        user = self.request.headers[UPS_HEADER_NAME]
         if user:
             post_criteria = models.PostCriteria()
             post_list = models.query_post(post_criteria)
             self.render_response('admin_post_list.html', {'post_list':post_list, 'uri_for':webapp2.uri_for})
         else:
-            self.redirect(users.create_login_url(self.request.uri))
+            # self.redirect(users.create_login_url(self.request.uri))
+            self.redirect(self.uri_for('home'))
 
 
 class AdminPostHandler(BaseAdminHandler):
-    @admin_required
+    #@admin_required
     def get(self):
         post_id = self.request.get('id')
         if post_id != None:
@@ -216,9 +231,14 @@ class AdminPostHandler(BaseAdminHandler):
         ctx['upload_url'] = create_file_upload_url(self.request)
         self.render_response('admin_post.html', ctx)
     def post(self):
-        user = users.get_current_user()
-        if not user:
-            self.redirect(users.create_login_url(self.request.uri))
+        #user = users.get_current_user()
+        #if not user:
+        #    self.redirect(users.create_login_url(self.request.uri))
+        user = 'my12time@gmail.com'
+        account = models.get_account(user)
+        if not account:
+            self.redirect(self.uri_for('admin-user'))
+            return
         post_data = {}
         post_id = self.request.get('id')
         post_data['title'] = self.request.get('title')
@@ -237,21 +257,21 @@ class AdminPostHandler(BaseAdminHandler):
         self.render_response('admin_post.html',ctx)
 
 class AdminDeletePostHandler(BaseAdminHandler):
-    @admin_required
+    #@admin_required
     def get(self):
         post_id = self.request.get('id')
         models.delete_post_by_id(post_id)
         self.redirect(self.uri_for('admin-post-list'))
 
 class AdminFileHandler(BaseAdminHandler):
-    @admin_required
+    #@admin_required
     def get(self):
         ctx = {'file_list':models.get_uploaded_file_list(), 'uri_for':webapp2.uri_for}
         ctx['upload_url'] = create_file_upload_url(self.request)
         self.render_response('admin_file.html', ctx)
 
 class AdminFileDeleteHandler(BaseAdminHandler):
-    @admin_required
+    #@admin_required
     def get(self, file_id):
         uploadedFile = models.get_file(file_id)
         if uploadedFile:
@@ -272,9 +292,9 @@ class AdminFileDeleteHandler(BaseAdminHandler):
 
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
     def post(self):
-        user = users.get_current_user()
-        if not user:
-            self.redirect(users.create_login_url(self.request.uri))
+        #user = users.get_current_user()
+        #if not user:
+        #    self.redirect(users.create_login_url(self.request.uri))
 
         upload_files = self.get_uploads('file')
         blob_info = upload_files[0]
@@ -341,9 +361,6 @@ def handle_500(request, response, exception):
     response.write('A server error occurred!')
     response.set_status(500)
 
-debug = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
-if debug:
-    logging.info('Running in Debug mode!')
 
 routes = [ webapp2.Route('/', MainHandler, 'home'),
            webapp2.Route('/admin', AdminHandler, 'admin-home'),
@@ -374,6 +391,14 @@ config['webapp2_extras.sessions'] = {
 }
 if not debug:
     config['host_url'] = 'http://blog.viifly.com'
+
+#idef host_restrict_dispatcher(router, request, response):
+#    head_fly = request.headers('X-Viifly')
+#    if not debug and not head_fly:
+#        # how to redirect?
+#        pass
+#    return router.default_dispatcher(request, response)
+#app.router.set_dispatcher(host_restrict_dispatcher)
 
 app = webapp2.WSGIApplication(routes, debug=debug, config=config)
 app.error_handlers[404] = handle_404

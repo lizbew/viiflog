@@ -31,3 +31,8 @@ libraries:
   version: latest
 
 
+skip_files:
+- ^\.git(/.*)?
+- (.*/)?.*~
+- (.*/)?.*\.py[co]
+

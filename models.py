@@ -219,7 +219,7 @@ def get_user_list():
 def get_account(user):
     if not user:
         return None
-    q = Account.all().filter('email =', user.email())
+    q = Account.all().filter('email =', user) # user.email())
     return q.get()
 
 def get_user_by_id(uid):
