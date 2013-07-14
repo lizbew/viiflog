@@ -15,7 +15,7 @@ from google.appengine.api import images
 import webapp2_extras.routes
 from webapp2_extras import jinja2
 from webapp2_extras import sessions
-from webapp2_extras.appengine.users import admin_required
+from oauth2client.appengine import OAuth2Decorator
 
 #sys.path.append(os.path.join(os.path.dirname(__file__), 'lib'))
 
@@ -48,6 +48,12 @@ def create_file_url(uploaded_file):
 #    if uploaded_file and uploaded_file.is_img():
 #        return images.get_serving_url(blob_key=uploaded_file.store_key)
 #    return None
+
+decorator = OAuth2Decorator(
+    client_id='211371041097.apps.googleusercontent.com',
+    client_secret='fidnf_xinsd_ddsdffdfdi_xixixw__',
+    scope='https://www.googleapis.com/auth/plus.login',
+    callback_path=uri_for_static('/oauth2callback'))
 
 class RedirectHandler(webapp2.RequestHandler):
     def get(self):
@@ -125,13 +131,13 @@ class TagHandler(BaseHandler):
         self.render_response_post_list(post_list)
 
 class AdminHandler(BaseAdminHandler):
-    @admin_required
+    @decorator.oauth_required
     def get(self):
         self.render_response('admin_base.html', {'uri_for': webapp2.uri_for})
 
 
 class AdminUserHandler(BaseAdminHandler):
-    @admin_required
+    @decorator.oauth_required
     def get(self):
         uid = self.request.get('uid')
         a = models.get_user_by_id(uid)
@@ -157,7 +163,7 @@ class AdminUserHandler(BaseAdminHandler):
         #self.response.write(render_template('admin_user.html',{'user_list':models.get_user_list()}))
 
 class AdminCategoryHandler(BaseAdminHandler):
-    @admin_required
+    @decorator.oauth_required
     def get(self):
         cid = self.request.get('cid')
         category = models.get_category_by_id(cid)
@@ -183,7 +189,7 @@ class AdminCategoryHandler(BaseAdminHandler):
         self.redirect(self.uri_for('admin-category'))
 
 class AdminPostListHandler(BaseAdminHandler):
-    @admin_required
+    @decorator.oauth_required
     def get(self):
         user = users.get_current_user()
         if user:
@@ -195,7 +201,7 @@ class AdminPostListHandler(BaseAdminHandler):
 
 
 class AdminPostHandler(BaseAdminHandler):
-    @admin_required
+    @decorator.oauth_required
     def get(self):
         post_id = self.request.get('id')
         if post_id != None:
@@ -226,21 +232,18 @@ class AdminPostHandler(BaseAdminHandler):
         self.render_response('admin_post.html',ctx)
 
 class AdminDeletePostHandler(BaseAdminHandler):
-    @admin_required
     def get(self):
         post_id = self.request.get('id')
         models.delete_post_by_id(post_id)
         self.redirect(self.uri_for('admin-post-list'))
 
 class AdminFileHandler(BaseAdminHandler):
-    @admin_required
     def get(self):
         ctx = {'file_list':models.get_uploaded_file_list(), 'uri_for':webapp2.uri_for}
         ctx['upload_url'] = create_file_upload_url(self.request)
         self.render_response('admin_file.html', ctx)
 
 class AdminFileDeleteHandler(BaseAdminHandler):
-    @admin_required
     def get(self, file_id):
         uploadedFile = models.get_file(file_id)
         if uploadedFile:
@@ -349,7 +352,8 @@ routes = [ webapp2.Route('/', MainHandler, 'home'),
            webapp2.Route('/tag/<name>', TagHandler, 'post-by-tag'),
            webapp2.Route('/upload', UploadHandler, 'upload'),
            webapp2.Route('/serv/<file_id:\d+>/<file_name>', ServeHandler, 'serv'),
-           webapp2.Route('/page/<page>', PageHandler, 'page')]
+           webapp2.Route('/page/<page>', PageHandler, 'page'),
+           webapp2.Route(decorator.callback_path, decorator.callback_handler(), 'oauth2callback')]
 
 if PATH_PREFIX:
     routes = [ webapp2_extras.routes.PathPrefixRoute(PATH_PREFIX, routes),
