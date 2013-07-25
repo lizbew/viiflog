@@ -18,6 +18,8 @@ from webapp2_extras import sessions
 #from webapp2_extras.appengine.users import admin_required
 from oauth2client.appengine import OAuth2Decorator
 
+from google.appengine.api import xmpp
+
 #sys.path.append(os.path.join(os.path.dirname(__file__), 'lib'))
 
 #JINJA_ENVIRONMENT = jinja2.Environment(
@@ -106,7 +108,10 @@ class BaseHandler(webapp2.RequestHandler):
         context['post_list'] = post_list
         context['page_mode'] = page_mode
         context['uri_for'] = webapp2.uri_for
+
+        # logging.debug('category_list {0}'.format(context))
         self.render_response('post.html', context)
+        # self.response.write('a')
 
 class BaseAdminHandler(BaseHandler):
     pass
@@ -210,15 +215,14 @@ class AdminPostListHandler(BaseAdminHandler):
     #@admin_required
     def get(self):
         # user = users.get_current_user()
-        user = self.request.headers[UPS_HEADER_NAME]
-        if user:
-            post_criteria = models.PostCriteria()
-            post_list = models.query_post(post_criteria)
-            self.render_response('admin_post_list.html', {'post_list':post_list, 'uri_for':webapp2.uri_for})
-        else:
-            # self.redirect(users.create_login_url(self.request.uri))
-            self.redirect(self.uri_for('home'))
+        # user = self.request.headers.get(UPS_HEADER_NAME)
+        #if not user:
+        #    self.redirect(self.uri_for('home'))
+        #    return
 
+        post_criteria = models.PostCriteria()
+        post_list = models.query_post(post_criteria)
+        self.render_response('admin_post_list.html', {'post_list':post_list, 'uri_for':webapp2.uri_for})
 
 class AdminPostHandler(BaseAdminHandler):
     #@admin_required
@@ -343,6 +347,19 @@ class PageHandler(BaseHandler):
         else:
             return None
 
+class XMPPHandler(webapp2.RequestHandler):
+    def post(self):
+        message = xmpp.Message(self.request.POST)
+        if message.body[0:5].lower() == 'hello':
+            message.reply("Greetings!")
+
+class ChatPageHandler(BaseHandler):
+    def get(self):
+        xmpp.send_presence('my12time@gmail.com', status="visited page")
+        ctx = {'content':'has', 'uri_for':webapp2.uri_for}
+        self.render_response('page.html', ctx)
+
+
 def convert_markdown_file(md_file):
     outBuf= StringIO.StringIO()
     markdown.markdownFromFile(input=md_file, output=outBuf)
@@ -352,7 +369,8 @@ def convert_markdown_text(md_text):
     return markdown.markdown(md_text)
 
 def handle_404(request, response, exception):
-    logging.exception(exception)
+    # logging.exception(exception)
+    logging.info('404 return for {0}, visited reference {1}'.format(request.url, request.headers.get('Referer')))
     response.write('Oops! Page not found!')
     response.set_status(404)
 
@@ -382,7 +400,8 @@ routes = [ webapp2.Route('/', MainHandler, 'home'),
 
 if PATH_PREFIX:
     routes = [ webapp2_extras.routes.PathPrefixRoute(PATH_PREFIX, routes),
-               webapp2.Route('/', RedirectHandler, 'r')]
+               webapp2.Route('/', RedirectHandler, 'r'),
+               webapp2.Route('/chat/', ChatPageHandler)]
 
 config = {}
 config['page_size'] = 10
