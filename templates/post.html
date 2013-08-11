@@ -10,7 +10,7 @@
 
 {% block content %}
           <div class="yui3-g">
-              <div class="yui3-u-2-3">
+              <div class="yui3-u col-left">
               {% if post_list %}
               {% for post in post_list %}
                   {% include "partial_post.html" %}
@@ -19,7 +19,7 @@
                   <div class="message">No Post Found</div>
               {% endif %}
               </div>
-              <div class="yui3-u-1-3">
+              <div class="yui3-u col-right">
                   <div class="sidebar">
                   {% include "sb_category.html" %}
                   </div>

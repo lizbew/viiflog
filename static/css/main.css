@@ -113,6 +113,14 @@ body .primary-button {
     padding: 1em;
 }
 
+.col-left {
+    width: 650px;
+}
+
+.col-right {
+    width: 319px;
+}
+
 .blog {
     background-color: #fff;
     /*padding: 1em;

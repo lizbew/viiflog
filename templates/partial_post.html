@@ -4,7 +4,7 @@
                       <div>{% if page_mode == 'list' %}{{ post.get_html_abstract() | safe }}{% else %}{{ post.get_html_content() | safe }}{% endif %}</div>
                       {% import "macros_post.html" as marcos_post %}
                       <div class="blog-meta2">
-                        {{ 'In ' ~ marcos_post.disp_category(post.category, uri_for) }}
+                        {% if post_category %}{{ 'In ' ~ marcos_post.disp_category(post.category, uri_for) }}{% else %}Uncategory{% endif %}
                         {% if post.has_tags() %}Tags: {% for tag in post.tags %}{{ marcos_post.disp_tag(tag, uri_for ) }}{% endfor %}{% endif %}
                       </div>
                   </div>

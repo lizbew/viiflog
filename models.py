@@ -201,7 +201,8 @@ def query_post(query_criteria):
             q.filter('tags =', query_criteria.tag)
         page_size = query_criteria.page_size
     else:
-        q.order('-created_date')
+        q.filter('published =', True)
+        q.order('-published_date')
     return q.run(limit=page_size)
 
 def find_post_by_category(name, result_limit=10):

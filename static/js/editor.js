@@ -44,6 +44,7 @@ YUI().use('node', 'io-upload-iframe','json-parse',  function(Y){
   Y.on('io:complete', complete, Y, ['fd', 'sf']);
   Y.on('io:failure', onFailure, Y, ['fd', 'sf']);
 
+  Y.on('domready', function() {
   Y.one('#upload-file-button').on('click', function(e) {
     e.preventDefault();
     
@@ -51,4 +52,5 @@ YUI().use('node', 'io-upload-iframe','json-parse',  function(Y){
     var request = Y.io(uri, cfg);
     return false;
   });
-})
+  });
+});

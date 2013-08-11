@@ -15,6 +15,8 @@ from google.appengine.api import images
 import webapp2_extras.routes
 from webapp2_extras import jinja2
 from webapp2_extras import sessions
+from webapp2_extras import json
+
 #from webapp2_extras.appengine.users import admin_required
 from oauth2client.appengine import OAuth2Decorator
 
@@ -213,7 +215,7 @@ class AdminCategoryHandler(BaseAdminHandler):
         elif action == 'delete':
             cid = self.request.get('cid')
             models.delete_category(cid)
-        self.redirect(self.uri_for('admin-category'))
+        self.render_response('admin_category.html',ctx)
 
 class AdminPostListHandler(BaseAdminHandler):
     #@admin_required
@@ -257,6 +259,9 @@ class AdminPostHandler(BaseAdminHandler):
         # logging.warn('fdf%s'%(self.request.get('publish'),))
         if self.request.get('publish') == 'on':
             post_data['published'] = True
+        else:
+            post_data['published'] = False
+
         post_data['tags'] = self.request.get('tags')
         # logging.warn('get tags: %s'%post_tags)
         post = models.save_post_lon(user, post_id, post_data)
@@ -352,6 +357,27 @@ class PageHandler(BaseHandler):
         else:
             return None
 
+class ApiPostHandler(BaseHandler):
+    def get(self):
+        self.response.headers['Content-Type'] = 'application/json'
+        json_data = {}
+        post_list = models.query_post(None)
+        posts = []
+        if post_list:
+            for p in post_list:
+                posts.append(self.extr_post_info(p))
+        json_data['posts'] = posts
+        json_data['post_num'] = len(posts)
+        self.response.write(json.encode(json_data))
+     
+    def extr_post_info(self, post):
+        info = {}
+        info['title'] = post.title
+        info['author'] = post.author.nick_name
+        info['published_date'] = post.published_date.isoformat()
+        return info
+
+
 class XMPPHandler(webapp2.RequestHandler):
     def post(self):
         message = xmpp.Message(self.request.POST)
@@ -401,6 +427,7 @@ routes = [ webapp2.Route('/', MainHandler, 'home'),
            webapp2.Route('/upload', UploadHandler, 'upload'),
            webapp2.Route('/serv/<file_id:\d+>/<file_name>', ServeHandler, 'serv'),
            webapp2.Route('/page/<page>', PageHandler, 'page'),
+           webapp2.Route('/api/v1/posts', ApiPostHandler, 'api-post'),
            webapp2.Route(decorator.callback_path, decorator.callback_handler(), 'oauth2callback')]
 
 if PATH_PREFIX:
