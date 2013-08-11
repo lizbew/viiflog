@@ -5,3 +5,8 @@
 {% block content %}
 {{ content | safe }}
 {% endblock %}
+
+{% block js %}
+<script src="{{ uri_for_static('/static/js/prettify.js') }}"></script>
+<script src="{{ uri_for_static('/static/js/main.js') }}"></script>
+{% endblock %}

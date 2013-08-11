@@ -3,9 +3,9 @@
 {% block title %}Post List - Admin - Blog{% endblock %}
 
 {% block content %}
-<div class="pure-g content-ribbon">
-    <div class="pure-u-1-6">
-        <div class="pure-menu pure-menu-open">
+<div class="yui3-g content-ribbon">
+    <div class="yui3-u-1-6">
+        <div class="yui3-menu yui3-menu-open">
             <ul>
                 <li><a href="{{ uri_for('admin-post') }}">New Post</a></li>
                 <li><a href="{{ uri_for('admin-post-list') }}">Post</a></li>
@@ -16,11 +16,16 @@
         </div>
     </div>
 
-  <div class="pure-u-5-6">
+  <div class="yui3-u-5-6">
       {% block page_content %}
       {% if logout_url %}<a href="{{ logout_url }}">Logout</a>  {% endif %}
       {% endblock %}
   </div>
 </div>
 
+{% endblock %}
+
+{% block js %}
+<script src="{{ uri_for_static('/static/js/prettify.js') }}"></script>
+<script src="{{ uri_for_static('/static/js/main.js') }}"></script>
 {% endblock %}

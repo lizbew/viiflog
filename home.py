@@ -41,8 +41,9 @@ CHECK_HOST = not debug
 UPS_HEADER_NAME = 'X-Viifly'
 
 def uri_for_static(static_uri):
-    if PATH_PREFIX and static_uri.startswith('/'):
+    if PATH_PREFIX and not debug and static_uri.startswith('/'):
         return PATH_PREFIX + static_uri
+    return static_uri
 
 def create_file_upload_url(request):
     # return blobstore.create_upload_url(webapp2.get_app().router.build(request, 'upload', [], {}))
@@ -108,6 +109,7 @@ class BaseHandler(webapp2.RequestHandler):
         context['post_list'] = post_list
         context['page_mode'] = page_mode
         context['uri_for'] = webapp2.uri_for
+        context['uri_for_static'] = uri_for_static
 
         # logging.debug('category_list {0}'.format(context))
         self.render_response('post.html', context)
@@ -156,7 +158,7 @@ class AdminHandler(BaseAdminHandler):
         if self.app.config.get('host_url'):
             home_url = '%s%s'%(self.app.config.get('host_url'), home_url)
         logout_url = users.create_logout_url(home_url)
-        self.render_response('admin_base.html', {'uri_for': webapp2.uri_for, 'logout_url':logout_url})
+        self.render_response('admin_base.html', {'uri_for': webapp2.uri_for, 'logout_url':logout_url, 'uri_for_static':uri_for_static})
 
 
 class AdminUserHandler(BaseAdminHandler):
@@ -171,6 +173,7 @@ class AdminUserHandler(BaseAdminHandler):
         ctx['account'] = a
         ctx['user_list'] = models.get_user_list()
         ctx['uri_for'] = webapp2.uri_for
+        ctx['uri_for_static'] = uri_for_static
         self.render_response('admin_user.html', ctx)
     def post(self):
         uid = self.request.get('uid')
@@ -198,6 +201,7 @@ class AdminCategoryHandler(BaseAdminHandler):
         ctx['category'] = category
         ctx['category_list'] = models.get_category_list()
         ctx['uri_for'] = webapp2.uri_for
+        ctx['uri_for_static'] = uri_for_static
         self.render_response('admin_category.html',ctx)
     def post(self):
         action = self.request.get('action')
@@ -222,7 +226,7 @@ class AdminPostListHandler(BaseAdminHandler):
 
         post_criteria = models.PostCriteria()
         post_list = models.query_post(post_criteria)
-        self.render_response('admin_post_list.html', {'post_list':post_list, 'uri_for':webapp2.uri_for})
+        self.render_response('admin_post_list.html', {'post_list':post_list, 'uri_for':webapp2.uri_for, 'uri_for_static':uri_for_static})
 
 class AdminPostHandler(BaseAdminHandler):
     #@admin_required
@@ -231,7 +235,7 @@ class AdminPostHandler(BaseAdminHandler):
         if post_id != None:
             post = models.get_post_by_id(post_id)
 
-        ctx = {'post': post, 'category_list':models.get_category_list(), 'uri_for':webapp2.uri_for}
+        ctx = {'post': post, 'category_list':models.get_category_list(), 'uri_for':webapp2.uri_for, 'uri_for_static':uri_for_static}
         ctx['upload_url'] = create_file_upload_url(self.request)
         self.render_response('admin_post.html', ctx)
     def post(self):
@@ -256,7 +260,7 @@ class AdminPostHandler(BaseAdminHandler):
         post_data['tags'] = self.request.get('tags')
         # logging.warn('get tags: %s'%post_tags)
         post = models.save_post_lon(user, post_id, post_data)
-        ctx = {'post': post, 'category_list':models.get_category_list(), 'uri_for':webapp2.uri_for}
+        ctx = {'post': post, 'category_list':models.get_category_list(), 'uri_for':webapp2.uri_for, 'uri_for_static':uri_for_static}
         ctx['upload_url'] = create_file_upload_url(self.request)
         self.render_response('admin_post.html',ctx)
 
@@ -270,7 +274,7 @@ class AdminDeletePostHandler(BaseAdminHandler):
 class AdminFileHandler(BaseAdminHandler):
     #@admin_required
     def get(self):
-        ctx = {'file_list':models.get_uploaded_file_list(), 'uri_for':webapp2.uri_for}
+        ctx = {'file_list':models.get_uploaded_file_list(), 'uri_for':webapp2.uri_for, 'uri_for_static':uri_for_static}
         ctx['upload_url'] = create_file_upload_url(self.request)
         self.render_response('admin_file.html', ctx)
 
@@ -336,6 +340,7 @@ class PageHandler(BaseHandler):
         context = {}
         context['content'] = convert_markdown_file(page_file)
         context['uri_for'] = webapp2.uri_for
+        context['uri_for_static'] = uri_for_static
         self.render_response('page.html', context) 
 
     def resolvePagePath(self, page):
@@ -356,7 +361,7 @@ class XMPPHandler(webapp2.RequestHandler):
 class ChatPageHandler(BaseHandler):
     def get(self):
         xmpp.send_presence('my12time@gmail.com', status="visited page")
-        ctx = {'content':'has', 'uri_for':webapp2.uri_for}
+        ctx = {'content':'has', 'uri_for':webapp2.uri_for, 'uri_for_static':uri_for_static}
         self.render_response('page.html', ctx)
 
 
