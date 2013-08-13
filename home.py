@@ -199,12 +199,7 @@ class AdminCategoryHandler(BaseAdminHandler):
         if action == 'delete' and category:
             category.delete()
             category = None
-        ctx = {}
-        ctx['category'] = category
-        ctx['category_list'] = models.get_category_list()
-        ctx['uri_for'] = webapp2.uri_for
-        ctx['uri_for_static'] = uri_for_static
-        self.render_response('admin_category.html',ctx)
+        self.render_page(category)
     def post(self):
         action = self.request.get('action')
         if action == 'edit':
@@ -215,6 +210,14 @@ class AdminCategoryHandler(BaseAdminHandler):
         elif action == 'delete':
             cid = self.request.get('cid')
             models.delete_category(cid)
+        self.render_page()
+
+    def render_page(self, category=None):
+        ctx = {}
+        ctx['category'] = category
+        ctx['category_list'] = models.get_category_list()
+        ctx['uri_for'] = webapp2.uri_for
+        ctx['uri_for_static'] = uri_for_static
         self.render_response('admin_category.html',ctx)
 
 class AdminPostListHandler(BaseAdminHandler):

@@ -275,7 +275,10 @@ def delete_category(cid):
 
 def get_category_list():
     q = PostCategory.all()
-    return q.run()
+    ret = []
+    for r in q.run():
+        ret.append(r)
+    return ret
 
 def find_category(name):
     if not name:
