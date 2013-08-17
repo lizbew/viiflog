@@ -42,10 +42,11 @@ PATH_PREFIX = '/blog'
 CHECK_HOST = not debug
 UPS_HEADER_NAME = 'X-Viifly'
 
-def uri_for_static(static_uri):
-    if PATH_PREFIX and not debug and static_uri.startswith('/'):
-        return PATH_PREFIX + static_uri
-    return static_uri
+def uri_for_static(static_uri, host_url=None):
+    ret = static_uri
+    if static_uri.startswith('/'):
+        ret = '%s%s%s'%(host_url if host_url else '', PATH_PREFIX if PATH_PREFIX else '', static_uri)
+    return ret
 
 def create_file_upload_url(request):
     # return blobstore.create_upload_url(webapp2.get_app().router.build(request, 'upload', [], {}))
@@ -375,9 +376,13 @@ class ApiPostHandler(BaseHandler):
      
     def extr_post_info(self, post):
         info = {}
+        info['id'] = post.get_id()
         info['title'] = post.title
         info['author'] = post.author.nick_name
         info['published_date'] = post.published_date.isoformat()
+        info['url'] = self.uri_for('post', post_id=post.get_id())
+        #if debug:
+        #    info['url'] = self.request.host_url + info['url']
         return info
 
 

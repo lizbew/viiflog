@@ -118,7 +118,7 @@ body .primary-button {
 }
 
 .col-right {
-    width: 319px;
+    width: 316px;
 }
 
 .blog {
@@ -153,9 +153,9 @@ a.title-cate-link:hover {
 }
 .sidebar {
     margin: 0 0px 0 10px;
-    padding-left: 10px;
-    /*padding-top: 2em;*/
-    border-left: 1px dashed  #778855;
+    /*padding-left: 10px;
+    padding-top: 2em;
+    border-left: 1px dashed  #778855;*/
 }
 
 .sidebox {
