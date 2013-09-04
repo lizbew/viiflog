@@ -79,7 +79,7 @@ class Post(db.Model):
 
     def get_tags_str(self):
         if self.tags:
-            return ' '.join(self.tags)
+            return ','.join(self.tags)
         return ''
 
     def has_tags(self):
@@ -111,9 +111,15 @@ def save_post_lon(user, post_id, post_data):
         saved_post.content = post_data['content']
         
     if post_data['tags']:
-        tag_list = post_data['tags'].strip().split()
-        if len(tag_list) > 0:
-            saved_post.tags = tag_list
+        tags = []
+        tag_list = post_data['tags'].strip().split(',')
+        for t in tag_list:
+            if len(t.strip()) > 0:
+                ts = t.strip().split()
+                for tt in ts:
+                    tags.append(tt)
+        if len(tags) > 0:
+            saved_post.tags = tags
 
     saved_post.set_published(post_data['published'])
 
