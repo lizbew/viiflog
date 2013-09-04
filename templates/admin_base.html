@@ -1,31 +1,66 @@
-{% extends "base.html" %}
-
-{% block title %}Post List - Admin - Blog{% endblock %}
-
-{% block content %}
-<div class="yui3-g content-ribbon">
-    <div class="yui3-u-1-6">
-        <div class="yui3-menu yui3-menu-open">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% block head %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Admin{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.11.0/build/cssnormalize/cssnormalize-min.css">
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.11.0/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="{{ uri_for_static('/static/css/admin.css') }}" />
+    {% endblock %}
+  </head>
+  <body class="yui3-skin-sam">
+    <div id="c">
+        <div class="header">
+          <div>
+            <h1>Vika's Blog</h1>
+          </div>
+        <div id="blognav" class="yui3-menu yui3-menu-horizontal">
+          <div class="yui3-menu-content">
             <ul>
-                <li><a href="{{ uri_for('admin-post') }}">New Post</a></li>
-                <li><a href="{{ uri_for('admin-post-list') }}">Post</a></li>
-                <li><a href="{{ uri_for('admin-category') }}">Category</a></li>
-                <li><a href="{{ uri_for('admin-user') }}">User</a></li>
-                <li><a href="{{ uri_for('admin-file') }}">Uploaded File</a></li>
+              <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="{{ uri_for('home') }}">Home</a></li>
+              <li>
+                <a class="yui3-menu-label" href="#pa">Post</a>
+                <div class="yui3-menu" id="pa">
+                  <div class="yui3-menu-content">
+                    <ul>
+                      <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="{{ uri_for('admin-post') }}">New Post</a></li>
+                      <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="{{ uri_for('admin-post-list') }}">Post List</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </li>
+              <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="{{ uri_for('admin-category') }}">Category</a></li>
+              <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="{{ uri_for('admin-user') }}">User</a></li>
+              <li class="yui3-menuitem"><a class="yui3-menuitem-content" href="{{ uri_for('admin-file') }}">Uploaded File</a></li>
+              {% if logout_url %}<li class="yui3-menuitem"><a class="yui3-menuitem-content" href="{{ logout_url }}">Logout</a></li>{% endif %}
             </ul>
+          </div>
         </div>
-    </div>
+        </div>
+        <!-- div class="splash yui3-u-1"></div -->
+        <div class="top-sep"></div>
+        <div class="content">
+        
+        {% block content %}
+          {% block page_content %}
+            <p>This is admin page.</p>
+          {% endblock %}
+        {% endblock %}
+        </div>
 
-  <div class="yui3-u-5-6">
-      {% block page_content %}
-      {% if logout_url %}<a href="{{ logout_url }}">Logout</a>  {% endif %}
-      {% endblock %}
-  </div>
-</div>
-
-{% endblock %}
-
-{% block js %}
-<script src="{{ uri_for_static('/static/js/prettify.js') }}"></script>
-<script src="{{ uri_for_static('/static/js/main.js') }}"></script>
-{% endblock %}
+        <div class="footer">
+          {% block footer %}
+          <div class="cy">&copy;2013 vika</div>
+          <div class="powerby"><img src="https://developers.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" /></div>
+          {% endblock %}
+        </div>
+    <div>
+    <script src="http://yui.yahooapis.com/3.11.0/build/yui/yui-min.js"></script>
+    {% block js %}
+    <script src="{{ uri_for_static('/static/js/prettify.js') }}"></script>
+    <script src="{{ uri_for_static('/static/js/main.js') }}"></script>
+    {% endblock %}
+  </body>
+</html>

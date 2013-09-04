@@ -45,12 +45,15 @@ YUI().use('node', 'io-upload-iframe','json-parse',  function(Y){
   Y.on('io:failure', onFailure, Y, ['fd', 'sf']);
 
   Y.on('domready', function() {
-  Y.one('#upload-file-button').on('click', function(e) {
-    e.preventDefault();
-    
-    var uri = Y.one('#file-upload-form').get('action');
-    var request = Y.io(uri, cfg);
-    return false;
-  });
+    var uploadBtn = Y.one('#upload-file-button');
+    if (uploadBtn) {
+      uploadBtn.on('click', function(e) {
+        e.preventDefault();
+        
+        var uri = Y.one('#file-upload-form').get('action');
+        var request = Y.io(uri, cfg);
+        return false;
+      });
+    }
   });
 });

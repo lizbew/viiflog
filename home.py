@@ -106,8 +106,9 @@ class BaseHandler(webapp2.RequestHandler):
         #self.response.write(render_template(template_file, context))
         self.response.write(self.jinja2.render_template(template_file, **context))
 
-    def render_response_post_list(self, post_list, page_mode='list'):
+    def render_response_post_list(self, page_title, post_list, page_mode='list'):
         context = {}
+        context['title'] = page_title
         context['category_list'] =  models.get_category_list()
         context['post_list'] = post_list
         context['page_mode'] = page_mode
@@ -127,7 +128,7 @@ class MainHandler(BaseHandler):
         post_list = models.query_post(None)
         #category_list = models.get_category_list()
         #self.response.write(render_template('post.html', {'post_list':post_list, 'category_list':category_list}))
-        self.render_response_post_list(post_list)
+        self.render_response_post_list('Home', post_list)
 
 class PostHandler(BaseHandler):
     def get(self, post_id):
@@ -140,19 +141,19 @@ class PostHandler(BaseHandler):
                 self.abort(404)
                 return
         if post:
-            self.render_response_post_list([post], 'single')
+            self.render_response_post_list(post.title, [post], 'single')
         else:
             self.redirect(self.uri_for('home'))
 
 class CategoryHandler(BaseHandler):
     def get(self, name):
         post_list = models.find_post_by_category(name, self.get_page_size())
-        self.render_response_post_list(post_list)
+        self.render_response_post_list('Posts in category ' + name, post_list)
 
 class TagHandler(BaseHandler):
     def get(self, name):
         post_list = models.find_post_by_tag(name, self.get_page_size()) 
-        self.render_response_post_list(post_list)
+        self.render_response_post_list('Posts tagged ' + name, post_list)
 
 class AdminHandler(BaseAdminHandler):
     #@admin_required
@@ -347,6 +348,7 @@ class PageHandler(BaseHandler):
             self.abort(404)
             return
         context = {}
+        context['title'] = page
         context['content'] = convert_markdown_file(page_file)
         context['uri_for'] = webapp2.uri_for
         context['uri_for_static'] = uri_for_static

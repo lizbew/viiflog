@@ -1,7 +1,7 @@
 YUI().use('intl','node-menunav', function(Y){
-	var menu = Y.one('#blognav');
-
-	menu.plug(Y.Plugin.NodeMenuNav);
+	Y.on('contentready', function(){
+		this.plug(Y.Plugin.NodeMenuNav);  /*, { autoSubmenuDisplay: false, mouseOutHideDelay: 0 }*/
+	}, '#blognav');
 
 	prettyPrint();
 });
