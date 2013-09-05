@@ -5,3 +5,27 @@
 .top-sep {
 	margin: 4px 0px;
 }
+
+.footer {
+    background: #fff;
+    color: #aaa;
+    padding: 10px 0px 10px 260px;
+    padding-right: 44px;
+    font-size: 80%;
+    border-top: 1px solid #B7B7B7;
+}
+
+.footer > div {
+    display: inline-block;
+}
+.footer .cy {
+    float: left;
+    margin-left: -260px;
+    width: 260px;
+    padding-left: 4em;
+}
+
+.footer .powerby {
+    float: right;
+    text-align: right;
+}
