@@ -30,4 +30,20 @@
             {% endfor %}
         </tbody>
     </table>
+    {% if pager %}
+    <div><span>Page:</span>
+        <select id="pager-select">
+            {% for i in range(1, pager.total_pages + 1)%}
+            <option value="{{ i }}" {% if pager.current_page == i %}selected{% endif %}>{{ i }}</option>
+            {% endfor %}
+        </select>
+        <button id="pager-button">Go</button>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block js %}
+<script src="{{ uri_for_static('/static/js/prettify.js') }}"></script>
+<script src="{{ uri_for_static('/static/js/main.js') }}"></script>
+<script src="{{ uri_for_static('/static/js/pager.js') }}"></script>
 {% endblock %}

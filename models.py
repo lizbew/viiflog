@@ -1,10 +1,19 @@
+# -*- coding: utf-8 -*-
 import datetime
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
 from google.appengine.api import memcache
 import logging
 import utils
-import datetime
+import math
+# import urllib
+
+# fix for UnicodeDecodeError: 'ascii' codec can't decode byte 0xe4 in position 13: ordinal not in range(128)
+import sys
+default_encoding = 'utf-8'
+if sys.getdefaultencoding() != default_encoding:
+    reload(sys)
+    sys.setdefaultencoding(default_encoding)
 
 class UploadedFile(db.Model):
     file_name = db.StringProperty()
@@ -74,13 +83,19 @@ class Post(db.Model):
 
     def fmt_date_str(self, some_date):
         if some_date:
-            return some_date.strftime('%Y-%m-%d %H:%M')
+            return (some_date+ datetime.timedelta(hours = 8)).strftime('%Y-%m-%d %H:%M')
         return None
 
     def get_tags_str(self):
         if self.tags:
             return ','.join(self.tags)
         return ''
+
+    #def get_urlencoded_tags(self):
+    #    ec_tags = []
+    #    for t in self.tags:
+    #        ec_tags.append(urllib.quote_plus(t))
+    #    return ec_tags
 
     def has_tags(self):
         return self.tags and len(self.tags) > 0
@@ -96,6 +111,30 @@ class Post(db.Model):
 class PostViewCount(db.Model):
     post = db.ReferenceProperty(Post)
     view_count = db.IntegerProperty()
+
+class Pager(object):
+    def __init__(self, page, page_size):
+        self.page_size = page_size if page_size > 0 else 10
+        self.current_page = page if page > 0 else 1
+        self.total_pages = 1
+        self.prev_page = 1
+        self.next_page = 1
+        #self.total_pages = math.ceil(total_records * 1.0 / self.current_page)
+        #self.prev_page = self.current_page - 1 if self.current_page > 1 else 1
+        #self.next_page = self.current_page + 1 if self.current_page < self.total_pages else self.total_pages
+    def set_total_records(self, total_records):
+        self.total_records = total_records
+        self.total_pages = int(math.ceil(total_records * 1.0 / self.page_size))
+        if self.current_page > self.total_pages:
+            self.current_page = self.total_pages
+        self.prev_page = self.current_page - 1 if self.current_page > 1 else 1
+        self.next_page = self.current_page + 1 if self.current_page < self.total_pages else self.total_pages
+
+    def get_start_record(self):
+        return (self.current_page - 1) * self.page_size
+    def set_page(self, page):
+        if page > 0:
+            self.current_page = page
 
 def save_post_lon(user, post_id, post_data):
     saved_post = get_post_from_datastore_by_id(post_id)
@@ -166,57 +205,60 @@ def cache_post(post):
         logging.error('Memcache set failed')
 
 class PostCriteria:
-    published_status = 'all' # published, unpublished, all
-    page = 0
-    page_size = 10
+    published_status = 'published' # published, unpublished, all
     category = None
     tag = None
+    pager = None
 
-    def select_published(self):
-        self.published_status = 'published'
-    def select_unpublished(self):
-        self.published_status = 'unpublished'
+    @classmethod
+    def new_criteria(cls, category = None, tag = None):
+        criteria = PostCriteria()
+        criteria.category = category
+        criteria.tag = tag
+        #if tag is not None:
+            # criteria.tag = unicode(tag,'utf-8')
+            #criteria.tag = tag.encode('utf-8')
+        criteria.pager = Pager(1, 10)
+        if tag or category:
+            criteria.published_status = 'published'
+        return criteria
 
-
-def create_post_criteria(category = None, tag = None):
-    criteria = PostCriteria()
-    criteria.category = category
-    criteria.tag = tag
-    if tag or category:
-        criteria.select_published()
-    return criteria
-
-def query_post(query_criteria):
+def query_post(query_criteria = None):
+    if query_criteria is None:
+        query_criteria = PostCriteria.new_criteria()
     q = Post.all()
-    page_size = 10
-    if query_criteria:
-        if query_criteria.published_status == 'published':
-            q.filter('published =', True)
-            q.order('-published_date')
-        elif query_criteria.published_status == 'unpublished':
-            q.filter('published =', False)
-            q.order('-created_date')
 
-        if query_criteria.category:
-            category = find_category(query_criteria.category)
-            if not category:
-                return None
-            else:
-                q.filter('category =', category)
-        if query_criteria.tag:
-            q.filter('tags =', query_criteria.tag)
-        page_size = query_criteria.page_size
-    else:
+    # publish status
+    if query_criteria.published_status == 'published':
         q.filter('published =', True)
         q.order('-published_date')
-    return q.run(limit=page_size)
+    elif query_criteria.published_status == 'unpublished':
+        q.filter('published =', False)
+        q.order('-created_date')
+    elif query_criteria.published_status != 'all':
+        q.filter('published =', True)
+        q.order('-published_date')
+
+    # category
+    if query_criteria.category:
+        category = find_category(query_criteria.category)
+        if not category:
+            return None
+        else:
+            q.filter('category =', category)
+    # tag
+    if query_criteria.tag:
+        q.filter('tags =', query_criteria.tag)
+
+    query_criteria.pager.set_total_records(int(q.count()))
+    return q.run(offset=query_criteria.pager.get_start_record(), limit=query_criteria.pager.page_size)
 
 def find_post_by_category(name, result_limit=10):
-    c = create_post_criteria(category=name)
+    c = PostCriteria.new_criteria(category=name)
     return query_post(c)
 
 def find_post_by_tag(name, result_limit=10):
-    c = create_post_criteria(tag=name)
+    c = PostCriteria.new_criteria(tag=name)
     return query_post(c)
 
 def get_user_list():
