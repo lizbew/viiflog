@@ -5,3 +5,7 @@ YUI().use('intl','node-menunav', function(Y){
 
 	prettyPrint();
 });
+
+function changePage(page) {
+    window.location.search = '?page=' + page;
+}
