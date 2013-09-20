@@ -40,11 +40,6 @@ from admin import *
 if debug:
     logging.info('Running in Debug mode!')
 
-
-
-
-
-
 #def create_img_url(uploaded_file):
 #    if uploaded_file and uploaded_file.is_img():
 #        return images.get_serving_url(blob_key=uploaded_file.store_key)
@@ -63,10 +58,14 @@ class RedirectHandler(webapp2.RequestHandler):
 class MainHandler(BaseHandler):
     def get(self):
         #self.response.headers['Content-Type'] = 'text/plain'
-        post_list = models.query_post(None)
+        post_criteria = models.PostCriteria.new_criteria()
+        page = self.request.get('page')
+        if page and page.isdigit():
+            post_criteria.pager.set_page(int(page))
+        post_list = models.query_post(post_criteria)
         #category_list = models.get_category_list()
         #self.response.write(render_template('post.html', {'post_list':post_list, 'category_list':category_list}))
-        self.render_response_post_list('Home', post_list)
+        self.render_response_post_list('Home', post_list, 'list', post_criteria.pager)
 
 class PostHandler(BaseHandler):
     def get(self, post_id):

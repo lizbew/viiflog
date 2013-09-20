@@ -135,6 +135,15 @@ class Pager(object):
     def set_page(self, page):
         if page > 0:
             self.current_page = page
+    def get_prev_page(self):
+        if self.current_page > 1:
+            return self.current_page - 1
+        return None
+    def get_next_page(self):
+        if self.current_page < self.total_pages:
+            return self.current_page + 1
+        return None
+
 
 def save_post_lon(user, post_id, post_data):
     saved_post = get_post_from_datastore_by_id(post_id)
@@ -219,8 +228,7 @@ class PostCriteria:
             # criteria.tag = unicode(tag,'utf-8')
             #criteria.tag = tag.encode('utf-8')
         criteria.pager = Pager(1, 10)
-        if tag or category:
-            criteria.published_status = 'published'
+        criteria.published_status = 'published'
         return criteria
 
 def query_post(query_criteria = None):

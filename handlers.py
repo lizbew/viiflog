@@ -46,7 +46,7 @@ class BaseHandler(webapp2.RequestHandler):
         #self.response.write(render_template(template_file, context))
         self.response.write(self.jinja2.render_template(template_file, **context))
 
-    def render_response_post_list(self, page_title, post_list, page_mode='list'):
+    def render_response_post_list(self, page_title, post_list, page_mode = 'list', pager = None):
         context = {}
         context['title'] = page_title
         context['category_list'] =  models.get_category_list()
@@ -54,6 +54,8 @@ class BaseHandler(webapp2.RequestHandler):
         context['page_mode'] = page_mode
         context['uri_for'] = webapp2.uri_for
         context['uri_for_static'] = uri_for_static
+        if pager:
+            context['pager'] = pager
 
         # logging.debug('category_list {0}'.format(context))
         self.render_response('post.html', context)

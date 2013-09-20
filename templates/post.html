@@ -15,6 +15,14 @@
               {% for post in post_list %}
                   {% include "partial_post.html" %}
               {% endfor %}
+              {% if pager %}
+              {% set p = pager.get_prev_page() %}
+              {% set n = pager.get_next_page() %}
+              <div>
+                {% if p %}<a href="javascript:changePage({{p}})">Prev Page</a>{% else %}<span>Prev Page</span>{% endif %} |
+                {% if n %}<a href="javascript:changePage({{n}})">Next Page</a>{% else %}<span>Next Page</span>{% endif %}
+              </div>
+              {% endif %}
               {% else %}
                   <div class="message">No Post Found</div>
               {% endif %}

@@ -89,12 +89,13 @@ class AdminPostListHandler(BaseAdminHandler):
         post_criteria = models.PostCriteria.new_criteria()
         page = self.request.get('page')
         if page and page.isdigit():
-        	post_criteria.pager.set_page(int(page))
+            post_criteria.pager.set_page(int(page))
+        post_criteria.published_status = 'all'
         post_list = models.query_post(post_criteria)
         self.render_response('admin_post_list.html', {'post_list':post_list, 
-        	'pager': post_criteria.pager,
-        	'uri_for':webapp2.uri_for, 
-        	'uri_for_static':uri_for_static})
+            'pager': post_criteria.pager,
+            'uri_for':webapp2.uri_for, 
+            'uri_for_static':uri_for_static})
 
 class AdminPostHandler(BaseAdminHandler):
     #@admin_required
