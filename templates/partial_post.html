@@ -1,10 +1,12 @@
-                  <div class="blog">
-                      <h2 class="blog-title"><a class="title-cate-link" href="{{ uri_for('post', post_id=post.get_id()) }}">{{ post.title }}</a></h2>
+                  <article class="blog">
+                    <header>
+                      <h2 class="blog-title">{% if page_mode == 'list' %}<a class="title-cate-link" href="{{ uri_for('post', post_id=post.get_id()) }}">{{ post.title }}</a>{% else %}{{ post.title }}{% endif %}</h2>
                       <div class="blog-meta1">
                         {% import "macros_post.html" as marcos_post %}
                         <span>{{ post.get_published_date_str() }}</span>&nbsp;&nbsp;
                         {% if post.category %}{{ 'Category: ' ~ marcos_post.disp_category(post.category, uri_for) }}{% else %}Uncategory{% endif %}
                         {% if post.has_tags() %} | Tags: {% for tag in post.tags %}{{ marcos_post.disp_tag(tag, uri_for ) }}{% endfor %}{% endif %}
                       </div>
+                    </header>
                       <div class="blog-content">{% if page_mode == 'list' %}{{ post.get_html_abstract() | safe }}{% else %}{{ post.get_html_content() | safe }}{% endif %}</div>
-                  </div>
+                  </article>

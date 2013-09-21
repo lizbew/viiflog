@@ -1,7 +1,7 @@
-                      <div class="sidebox">
-                          <div class="hd">
-                              <h2>Category</h2>
-                          </div>
+                      <section class="sidebox">
+                          <header class="hd">
+                              <h3>Category</h3>
+                          </header>
                           <div class="bd">
                               <ul>
                                   {% from "macros_post.html" import disp_category %}
@@ -9,6 +9,5 @@
                                   <li>{{ disp_category(c, uri_for) }}</li>
                                   {% endfor %}
                               </ul>
-
                           </div>
-                      </div>
+                      </section>

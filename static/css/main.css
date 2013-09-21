@@ -1,16 +1,11 @@
-/*body {
-    margin: 0 auto;
-    line-height: 1.7em; 
-}*/
-
 body {
     /*font-family: arial, sans-serif;*/
     font-family: Georgia, 'Times New Roman', Times, 'Songti SC', SimSun, serif;
 }
 
-#c {
-    width: 970px;
-    margin: 0 auto;
+.inner {
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 .top-sep {
@@ -128,24 +123,21 @@ body .primary-button {
 
 .blog {
     background-color: #fff;
-    /*padding: 1em;
-    margin-top: 2em;*/
     margin-bottom: 1em;
 }
 
 .blog-title {
     border-bottom: 1px solid gray;
+    color: rgb(102, 102, 102);
 }
 
 a.title-cate-link{
-    /*color: #000;*/
     text-decoration: none;
     color: rgb(102, 102, 102);
 } 
     
 a.title-cate-link:hover {
     text-decoration: underline;
-    /*color: blue;*/
 }
 
 .blog-meta1 {
