@@ -8,12 +8,17 @@
                 });
                 
                 var editor1 = new Markdown.Editor(converter1);
-                
+                /*editor1.hooks.set("insertImageDialog", function(callback) {
+                  setTimeout(function(){
+                    callback(null);
+                  },3000);
+                  return true;
+                });*/
                 editor1.run();
 
 })();
 
-YUI().use('node', 'io-upload-iframe','json-parse',  function(Y){
+YUI().use('node', 'io-upload-iframe','json-parse', 'cssbutton',  function(Y){
   var cfg = {
     method: 'POST',
     form: {
@@ -55,5 +60,20 @@ YUI().use('node', 'io-upload-iframe','json-parse',  function(Y){
         return false;
       });
     }
+  });
+  
+  //button
+  /*var saveButton = new Y.Button({
+    srcNode: '#save-button'
+  });*/
+  Y.one('#save-button').on('click', function(e) {
+    e.preventDefault();
+    var title = Y.one('#inp_title').get('value');
+	var content = Y.one('#wmd-input').get('value');
+	if (!title || !content) {
+	  alert('Please input both title and content1');
+	  return;
+	}
+	Y.one('#post-form').submit();
   });
 });

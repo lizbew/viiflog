@@ -3,7 +3,11 @@ YUI().use('intl','node-menunav', function(Y){
 		this.plug(Y.Plugin.NodeMenuNav);  /*, { autoSubmenuDisplay: false, mouseOutHideDelay: 0 }*/
 	}, '#blognav');
 
-	prettyPrint();
+
+	if (window.prettyPrint != undefined && typeof(prettyPrint) == 'function') {
+		prettyPrint();
+	}
+	
 });
 
 function changePage(page) {

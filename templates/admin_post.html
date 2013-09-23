@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block page_content %}
-<form action="{{ uri_for('admin-post') }}{% if post %}?id={{ post.get_id() }}{% endif %}" method="POST" class="yui3-form">
+<form id="post-form" action="{{ uri_for('admin-post') }}{% if post %}?id={{ post.get_id() }}{% endif %}" method="POST" class="yui3-form">
 <div class="yui3-g">
  <div class="yui3-u-3-4">
 <fieldset>
@@ -31,7 +31,7 @@
  
 
 
- <button type="submit" class="yui3-button notice">Save</button>
+ <button id="save-button" type="submit" class="yui3-button notice">Save</button>
  <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
 </fieldset>
 </div>
@@ -71,5 +71,6 @@
     <script type="text/javascript" src="{{ uri_for_static('/static/js/prettify.js') }}"></script>
     <script type="text/javascript" src="{{ uri_for_static('/static/js/main.js') }}"></script>
     <script type="text/javascript" src="{{ uri_for_static('/static/js/editor.js') }}"></script>
+    <script>
 {% endblock %}
 

@@ -6,6 +6,10 @@
 	margin: 4px 0px;
 }
 
+.content {
+    margin: 10px auto;
+}
+
 .footer {
     background: #fff;
     color: #aaa;
@@ -29,3 +33,28 @@
     float: right;
     text-align: right;
 }
+
+.vf-table {
+    border-top: 1px solid #eee;
+    border-left: 1px solid #eee;
+}
+
+.vf-table th {
+    font-weight: bold;
+    background-color: #ccc;
+}
+
+.vf-table th, .vf-table td {
+    border-right: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    padding: 3px 10px;
+}
+
+/*.vf-table th, .vf-table td {
+    border: none;
+}
+
+.vf-table th + th, .vf-table td + td {
+    border-left: 1px solid #eee;
+}*/
+

@@ -237,13 +237,12 @@ def query_post(query_criteria = None):
     q = Post.all()
 
     # publish status
-    if query_criteria.published_status == 'published':
-        q.filter('published =', True)
-        q.order('-published_date')
+    if query_criteria.published_status == 'all':
+        q.order('-created_date')
     elif query_criteria.published_status == 'unpublished':
         q.filter('published =', False)
         q.order('-created_date')
-    elif query_criteria.published_status != 'all':
+    else:
         q.filter('published =', True)
         q.order('-published_date')
 
