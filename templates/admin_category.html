@@ -5,10 +5,11 @@
 {% block page_content %}
 <div>
   <div>
-    <table class="vf-table">
+    <table class="vf-table" id="category-table">
         <thead>
             <tr>
                 <th>#</th>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Label</th>
                 <th>Action</th>
@@ -18,10 +19,11 @@
            {% for c in category_list %}
             <tr>
                 <td>{{ loop.index }}</td>
+                <td>{{ c.key().id() }}</td>
                 <td>{{ c.name }}</td>
                 <td>{{ c.label }}</td>
                 <td>
-                    <a href="{{ uri_for('admin-category') }}?cid={{ c.key().id() }}">Edit</a>
+                    <a href="{{ uri_for('admin-category') }}?cid={{ c.key().id() }}#{{ loop.index }}" class="edit">Edit</a>
                     <a href="{{ uri_for('admin-category') }}?action=delete&cid={{ c.key().id() }}">Delete</a>
                 </td>
             </tr>
@@ -30,6 +32,7 @@
     </table>
     <div>
         <button id="addNew">Add</button>
+    </div>
   </div>
 </div>
 <div id="panelContent">
@@ -57,15 +60,36 @@
 {% block js %}
 <script src="{{ uri_for_static('/static/js/main.js') }}"></script>
 <script type="text/javascript">
-YUI().use('panel', 'dd-plugin', function(Y){
+YUI().use('panel', 'dd-plugin', 'dataschema-xml', function(Y){
     var addNewButton = Y.one('#addNew'),
         saveButton = Y.one('#btn-save'),
         categoryForm = Y.one('#category-form'),
         panel;
 
+    // YUI DataSchema
+    var categoryTableEl = Y.Node.getDOMNode(Y.one('#category-table tbody')),
+        schema = {
+            resultListLocator: 'tr',
+            resultFields: [
+                {key: 'id', locator: 'td[2]'},
+                {key: 'name', locator: 'td[3]'},
+                {key: 'label', locator: 'td[4]'}
+            ]
+        },
+        categoryData = Y.DataSchema.XML.apply(schema, categoryTableEl);
+        //alert(JSON.stringify(categoryData));
+
     function addCategory() {
         panel.hide();
         categoryForm.submit();
+    }
+
+    function editCategory(i) {
+        var r = categoryData['results'][i-1];
+        Y.one('#inp_cid').set('value', r['id']);
+        Y.one('#inp_name').set('value', r['name']);
+        Y.one('#inp_label').set('value', r['label']);
+        panel.show();
     }
 
     panel = new Y.Panel({
@@ -89,7 +113,18 @@ YUI().use('panel', 'dd-plugin', function(Y){
     });
 
     addNewButton.on('click', function(e) {
+        Y.one('#inp_cid').set('value', '');
+        Y.one('#inp_name').set('value', '');
+        Y.one('#inp_label').set('value', '');
         panel.show();
+    });
+
+    Y.all('.edit').on('click', function(e) {
+        e.preventDefault();
+        var href = e.currentTarget.get('href'),
+            i = href.indexOf('#');
+        var x = href.substr(i+1);
+        editCategory(parseInt(x, 10));
     });
 
 });

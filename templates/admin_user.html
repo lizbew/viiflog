@@ -32,18 +32,26 @@
             {% endfor %}
         </tbody>
     </table>
+    <div>
+        <button id="addNew">Add</button>
+    </div>
   </div>
 </div>
-<div class="pure-g">
-  <div class="pure-u">
-    <form action="{{ uri_for('admin-user') }}" method="POST" class="pure-form-stacked">
+<div id="user-form-panel">
+  <div class="yui3-widget-bd">
+    <form id="user-form" action="{{ uri_for('admin-user') }}" metho="dPOST">
         <fieldset>
             <legend>New user</legend>
             <input type="hidden" id="inp_uid" name="uid" value="{% if account %}{{ account.key().id() }}{% endif %}"/>
+        <p>
             <label for="inp_nickname">Nick Name: </label>
             <input type="text" id="inp_nickname" name="nickname" value="{{ account.nick_name }}" placeholer="Nick Name" />
+        </p>
+        <p>
             <label for="inp_email">Email: </label>
             <input type="text" id="inp_email" name="email" value="{{ account.email }}" placeholer="Email" />
+        </p>
+        <p>
             <label for="inp_role">Role: </label>
             {# <input type="text" id="inp_role" name="role" value="{{ account.role }}" placeholer="Role" /> #}
             <select id="inp_role" name="role">
@@ -51,12 +59,56 @@
                 <option value="{{ r }}"{% if account.role == r %} selected{% endif %}>{{ r }}</option>
                 {% endfor %}
             </select>
+        </p>
+        <p>
             <label for="chk_active">
                 <input type="checkbox" id="chk_active" name="active" {% if account.active %}checked="yes"{% endif %}>Active
             </label>
-            <button type="submit" class="pure-button notice">Save</button>
+        </p>
         </fieldset>
     </form>
   </div>
 </div>
+{% endblock %}
+
+{% block js %}
+<script src="{{ uri_for_static('/static/js/main.js') }}"></script>
+<script type="text/javascript">
+/*YUI().use('panel', 'dd-plugin', function(Y){
+    var addNewButton = Y.one('#addNew'),
+        saveButton = Y.one('#btn-save'),
+        userForm = Y.one('#user-form'),
+        panel;
+
+    function addUser() {
+        panel.hide();
+        userForm.submit();
+    }
+
+    panel = new Y.Panel({
+        srcNode : '#user-form-panel',
+        headerContent: 'Add new User',
+        width: 300,
+        zIndex: 5,
+        centered: true,
+        modal: true,
+        visible: false,
+        render: true,
+        plugins: [Y.Plugin.Drag]
+    });
+    panel.addButton({
+        value: 'Save',
+        section: Y.WidgetStdMod.FOOTER,
+        action: function(e) {
+            e.preventDefault();
+            addUser();
+        }
+    });
+
+    addNewButton.on('click', function(e) {
+        panel.show();
+    });
+
+});*/
+</script>
 {% endblock %}
