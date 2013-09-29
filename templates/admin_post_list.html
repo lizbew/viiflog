@@ -20,7 +20,7 @@
                 <td>{{ loop.index }}</td>
                 <td><a href="{{ uri_for('post', post_id=post.get_id()) }}" target="_blank">{{ post.title }}</a></td>
                 <td>{{ post.get_updated_date_str() }}</td>
-                <td>{% if post.category %}{{ post.category.name}}{% endif %}</td>
+                <td>{% if post.category %}{{ post.category.label}}{% endif %}</td>
                 <td>{{ post.published }}</td>
                 <td>
                     <a href="{{ uri_for('admin-post') }}?id={{ post.get_id() }}">Edit</a>

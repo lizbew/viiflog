@@ -8,6 +8,44 @@ body {
     padding-right: 30px;
 }
 
+.header {
+    margin: 0 0;
+    
+}
+
+.logo {
+    height: 80px;
+    padding-top: 10px;
+}
+
+.headphoto {
+    display: block;
+    width: 60px;
+    height: 60px;
+    float: left;
+    background: url(/blog/static/img/p.jpg) no-repeat left top;
+    border: solid 3px rgb(255, 255, 255);
+    -webkit-border-radius: 10em;
+    -moz-border-radius: 10em;
+    border-radius: 10em;
+
+    -webkit-box-shadow: 0 1px 0 rgba(0,0,0, .2);
+    -moz-box-shadow: 0 1px 0 rgba(0,0,0, .2);
+    box-shadow: 0 1px 0 rgba(0,0,0, .2);
+}
+
+.headphoto img {
+    opacity: 0;
+}
+
+.site-name {
+    display: block;
+    width: 300px;
+    font-size: 36px;
+    font-weight: bold;
+    margin-left: 100px;
+    padding-top: 30px;
+}
 .top-sep {
     padding: 0.5em;
 }
@@ -16,20 +54,6 @@ body {
     padding: 1em;
 }
 
-.header {
-    margin: 0 0;
-}
-
-    .header .pure-menu {
-        padding: 0.5em;
-    }
-
-        .header .pure-menu li a:hover,
-        .header .pure-menu li a:focus {
-            background: none;
-            border: none;
-            color: #aaa;
-        }
 
 body .primary-button {
     background: #02a6eb;

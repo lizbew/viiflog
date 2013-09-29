@@ -3,8 +3,9 @@
   <head>
     {% block head %}
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Index{% endblock %}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.11.0/build/cssnormalize/cssnormalize-min.css">
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.11.0/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" type="text/css" href="{{ uri_for_static('/static/css/main.css') }}" />
@@ -15,8 +16,11 @@
   </head>
   <body class="yui3-skin-sam">
     <header class="inner header">
-        <div>
-          <h1>Vika's Blog</h1>
+        <div class="logo">
+          <span class="headphoto">
+            <img src="{{ uri_for_static('/static/img/p.jpg') }}" width="60" height="60">
+          </span>
+          <span class="site-name">Vika's Blog</span>
         </div>
       <div id="blognav" class="yui3-menu yui3-menu-horizontal">
         <div class="yui3-menu-content">
