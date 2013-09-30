@@ -35,7 +35,7 @@
     </div>
   </div>
 </div>
-<div id="panelContent">
+<div id="panelContent" style="display:none">
   <div class="yui3-widget-bd">
     <form id="category-form" action="{{ uri_for('admin-category') }}?action=edit" method="POST">
         <fieldset>
@@ -111,6 +111,7 @@ YUI().use('panel', 'dd-plugin', 'dataschema-xml', function(Y){
             addCategory();
         }
     });
+    Y.one('#panelContent').show();
 
     addNewButton.on('click', function(e) {
         Y.one('#inp_cid').set('value', '');

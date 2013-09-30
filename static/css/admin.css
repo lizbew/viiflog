@@ -58,3 +58,8 @@
     border-left: 1px solid #eee;
 }*/
 
+#ta_abstract {
+    width: 100%;
+    height: 5em;
+    border: 1px solid DarkGray;
+}

@@ -2,8 +2,8 @@
 .wmd-panel
 {
 	margin-left: 10px;
-	width: 700px;
-	/* min-width: 500px;*/
+	/*width: 700px;*/
+	min-width: 700px;
 }
 
 .wmd-button-bar 

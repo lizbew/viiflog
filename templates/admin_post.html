@@ -12,38 +12,39 @@
 {% block page_content %}
 <form id="post-form" action="{{ uri_for('admin-post') }}{% if post %}?id={{ post.get_id() }}{% endif %}" method="POST" class="yui3-form">
 <div class="yui3-g">
- <div class="yui3-u-3-4">
+ <div class="yui3-u">
 <fieldset>
   <legend>Create New Post</legend>
 
   <label for="inp_title">Title: </label>
-  <input type="text" id="inp_title" name="title" value="{{ post.title }}" placeholer="Title" />
+  <input type="text" id="inp_title" name="title" value="{{ post.title }}" placeholer="Title" size="30" />
   <div class="wmd-panel">
     <div id="wmd-button-bar"></div>
     <textarea class="wmd-input" id="wmd-input" name="content">{{ post.content | safe }}</textarea>
  </div>
    <label for="ta_abstract">Abstract: </label>
-  <textarea class="wmd-input" id="ta_abstract" name="abstract">{{ post.abstract | safe }}</textarea>
+  <textarea id="ta_abstract" name="abstract">{{ post.abstract | safe }}</textarea>
 
  <label for="publish">
      <input type="checkbox" id="publish" name="publish" {% if post.published %}checked="yes"{% endif %}>Publish
  </label>
  
-
-
- <button id="save-button" type="submit" class="yui3-button notice">Save</button>
- <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
-</fieldset>
-</div>
-<div class="yui3-u-1-4">
+  <div>
    <label for="inp-selcat">Category:</label>
    <select id="inp-selcat" name="category">
        {% for c in category_list %}
        <option value="{{ c.name }}" {% if post and  post.category and  c.name == post.category.name %}selected{% endif %}>{{ c.label }}</option>
        {% endfor %}
-   </select><br/>
-   <label for="inp-tags">Tags:</label>
-   <input type="text" id="inp-tags" name="tags" value="{% if post %}{{ post.get_tags_str() }}{% endif %}" />
+   </select>
+  </div>
+  <div>
+    <label for="inp-tags">Tags:</label>
+    <input type="text" id="inp-tags" name="tags" value="{% if post %}{{ post.get_tags_str() }}{% endif %}" size="20" />
+  </div>
+
+ <button id="save-button" type="submit" class="yui3-button notice">Save</button>
+ <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+</fieldset>
 </div>
 </div>
 </form>
